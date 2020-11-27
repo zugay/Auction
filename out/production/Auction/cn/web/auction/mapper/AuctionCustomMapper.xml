@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.web.auction.mapper.AuctionCustomMapper" >
+  <resultMap id="auctionAndAuctionRecordMap" type="cn.web.auction.pojo.Auction" >
+    <id column="auctionId" property="auctionid" jdbcType="INTEGER" />
+    <result column="auctionName" property="auctionname" jdbcType="VARCHAR" />
+    <result column="auctionStartPrice" property="auctionstartprice" jdbcType="DECIMAL" />
+    <result column="auctionUpset" property="auctionupset" jdbcType="DECIMAL" />
+    <result column="auctionStartTime" property="auctionstarttime" jdbcType="TIMESTAMP" />
+    <result column="auctionEndTime" property="auctionendtime" jdbcType="TIMESTAMP" />
+    <result column="auctionPic" property="auctionpic" jdbcType="VARCHAR" />
+    <result column="auctionPicType" property="auctionpictype" jdbcType="VARCHAR" />
+    <result column="auctionDesc" property="auctiondesc" jdbcType="VARCHAR" />
+    
+    <!-- 多方的映射 : List<Auctionrecord> auctionRecordList -->
+    <collection property="auctionRecordList" ofType="cn.web.auction.pojo.Auctionrecord">
+    	 <id column="record_id" property="id"/>
+    	 <result column="record_user_id" property="userid" jdbcType="INTEGER" />
+         <result column="record_auction_id" property="auctionid" jdbcType="INTEGER" />
+         <result column="auctionTime" property="auctiontime" jdbcType="TIMESTAMP" />
+         <result column="auctionPrice" property="auctionprice" jdbcType="DECIMAL" />
+         
+         <!-- 一方的映射 : Auctionuser auctionUser -->
+         <association property="auctionUser" javaType="cn.web.auction.pojo.Auctionuser">
+         	   <id column="record_user_id" property="userid" jdbcType="INTEGER" />
+   			   <result column="userName" property="username" jdbcType="VARCHAR" />	
+         </association>
+    </collection>
+    
+  </resultMap>
+  
+  <select id="findAuctionAndAuctionRecords" resultMap="auctionAndAuctionRecordMap" parameterType="int">
+      SELECT auction.*,
+	         auctionrecord.id record_id,
+	         auctionrecord.auctionId record_auction_id,
+	         auctionrecord.userId record_user_id,
+	         auctionrecord.auctionPrice,
+	         auctionrecord.auctionTime,
+	         auctionuser.userName
+	       FROM auction 
+	         LEFT OUTER JOIN auctionrecord
+	         ON auction.auctionId=auctionrecord.auctionId
+	         LEFT OUTER JOIN auctionuser 
+	         ON auctionuser.userId=auctionrecord.userId 
+	       WHERE auction.auctionId=#{value} 
+	       ORDER BY auctionrecord.auctionPrice DESC
+  </select>
+  
+  <!-- 拍卖结束的商品   <![CDATA[   ]]> 要原样解析  -->   
+  <select id="findAuctionEndtimeList" 
+  					resultType="cn.web.auction.pojo.AuctionCustom">
+	  SELECT 
+		auction.auctionname,
+		auction.auctionstarttime,
+		auction.auctionendtime,
+		auction.auctionstartprice,
+		auctionrecord.auctionprice,
+		auctionuser.username
+	  FROM 
+		auction,auctionrecord,auctionuser
+	  WHERE 
+		auction.auctionid=auctionrecord.auctionid
+		AND auctionrecord.userid=auctionuser.userid
+		AND auction.auctionendtime<![CDATA[<]]>NOW()
+		AND auctionrecord.auctionprice=
+		(SELECT MAX(r.auctionprice) FROM auctionrecord r 
+					  WHERE r.auctionid=auction.auctionid)
+  </select>
+  
+  
+  <!-- 拍卖中商品, 要有竞价记录 -->
+  <select id="findAuctionNoEndtimeList" 
+  				resultMap="auctionAndAuctionRecordMap">
+	  SELECT 
+		auction.*,
+		auctionrecord.id record_id,
+		auctionrecord.userid,
+		auctionrecord.auctiontime,
+		auctionrecord.auctionprice,
+		auctionuser.username
+	  FROM 
+		auction,auctionrecord,auctionuser
+	  WHERE 
+		 auction.auctionid=auctionrecord.auctionid
+		 AND auctionrecord.userid=auctionuser.userid
+		 AND auction.auctionendtime>NOW()
+  </select>
+  
+  
+  
+  
+  
+</mapper>

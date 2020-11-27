@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="Vue-demo:war">
+    <output-path>D:/vue/Vue-demo/target</output-path>
+    <properties id="maven-jee-properties">
+      <options>
+        <module>Vue-demo</module>
+        <packaging>war</packaging>
+      </options>
+    </properties>
+    <root id="archive" name="Vue-demo-1.0-SNAPSHOT.war">
+      <element id="artifact" artifact-name="Vue-demo:war exploded" />
+    </root>
+  </artifact>
+</component>

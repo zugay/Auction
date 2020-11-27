@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/Auction.iml" filepath="$PROJECT_DIR$/Auction.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../MyAuction/MyAuction.iml" filepath="$PROJECT_DIR$/../MyAuction/MyAuction.iml" />
+      <module fileurl="file://D:/vue/Vue-demo/Vue-demo.iml" filepath="D:/vue/Vue-demo/Vue-demo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../travel/travel.iml" filepath="$PROJECT_DIR$/../travel/travel.iml" />
+    </modules>
+  </component>
+</project>
